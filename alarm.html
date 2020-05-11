@@ -1,0 +1,224 @@
+<html> 
+    <body>
+        <head>
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+            <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        </head>
+        <style>
+            body{
+                background-color: black;
+                color: white;
+            }
+
+            table{
+                font-size: 1.7em;
+                text-align: center;
+            }
+
+            th{
+                border-width: 1px;
+                border-style: solid;
+                border-color: black;
+                padding: 10px;
+                background-color: white;
+                color: black;
+            }
+
+            td{
+                border-width: 1px;
+                border-style: solid;
+                border-color: white;
+                padding: 20px;
+                text-align: center;
+            }
+            
+            h1 #time{
+                margin: 20px 160px;
+            }
+
+            #upperMessage{
+                background-color: red;
+                min-height: 50px;
+                text-align: center; 
+                font-size: 25px; 
+                padding: 10px 10px;
+            }
+
+            .h1, h1 {
+                font-size: 7em;
+            }
+
+            .tabAlarmTitle{
+                text-align: left;
+            }
+
+            .topMargin{
+                margin-top: 15px;
+            }
+
+            .textCenter{
+                text-align: center;
+            }
+            .centerElement{
+                display: block; 
+                margin-left: auto;
+                margin-right: auto; 
+            }
+
+            .cogecoLogo{
+                background-color: white;
+                height: auto;
+            }
+
+            .centerTable {
+                display: table; 
+                margin-left: auto;
+                margin-right: auto; 
+                border-width: 1px;
+                border-style: solid;
+                border-color: white;
+            }
+
+            .switch {
+                position: relative;
+                display: inline-block;
+                width: 60px;
+                height: 34px;
+            }
+
+            .switch input { 
+                opacity: 0;
+                width: 0;
+                height: 0;
+            }
+
+            .slider {
+                position: absolute;
+                cursor: pointer;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: red;
+                -webkit-transition: .4s;
+                transition: .4s;
+            }
+
+            .slider:before {
+                position: absolute;
+                content: "";
+                height: 26px;
+                width: 26px;
+                left: 4px;
+                bottom: 4px;
+                background-color: white;
+                -webkit-transition: .4s;
+                transition: .4s;
+            }
+
+            input:checked + .slider {
+                background-color: #23A31C;
+            }
+
+            input:focus + .slider {
+                box-shadow: 0 0 1px #23A31C;
+            }
+
+            input:checked + .slider:before {
+                -webkit-transform: translateX(26px);
+                -ms-transform: translateX(26px);
+                transform: translateX(26px);
+            }
+
+            .slider.round {
+                border-radius: 34px;
+            }
+
+            .slider.round:before {
+                border-radius: 50%;
+            }
+        </style>
+        <div class="cogecoLogo">
+            <img class="centerElement" src="https://upload.wikimedia.org/wikipedia/commons/f/fe/Cogeco-media.png"/>
+        </div>
+        <div id="upperMessage">Système d'alarme</div>
+        <div class="textCenter">
+            <h1 id="time">Chargement...</h1>
+        </div>     
+         <div class="centerElement">
+            <table class="centerTable">
+                <tr>
+                  <th>ALARME</th>
+                  <th>ON/OFF</th>
+                </tr>
+                <tr>
+                  <td class="tabAlarmTitle">Alarme une minute avant le changement d'heure</td>
+                  <td><label class="switch">
+                    <input onclick="onclick_auth()" id="activateAlarmTopHour" type="checkbox">
+                     <span class="slider round"></span>
+                 </label></td>
+                </tr>
+                <tr>
+                  <td class="tabAlarmTitle">Alarme une demi heure avant le changement d'heure</td>
+                <td><label class="switch">
+                    <input onclick="onclick_auth()" id="activateAlarmMidHour" type="checkbox">
+                     <span class="slider round"></span>
+                 </label>
+                </td>
+                </tr>
+              </table>       
+        </div>
+
+        <button onclick="activate_All()" type="button" class="btn btn-primary centerElement topMargin button">Activer toutes les alarmes</button>
+      
+    </body>   
+    <script>
+        var upperMessage = document.getElementById('upperMessage'); 
+        var auth_AlarmTopHour = document.getElementById('activateAlarmTopHour');
+        var auth_AlarmMidHour = document.getElementById('activateAlarmMidHour');
+        var alarmArray = new Array(auth_AlarmTopHour,auth_AlarmMidHour);
+        var audio = new Audio('beep_Cogeco.mp3');       
+        
+    $(document).ready(function() {
+        setInterval(function() {            
+            var time = new Date();
+
+            document.getElementById("time").innerHTML=
+                (time.getHours() < 10 ? '0' : '') + time.getHours() + ":" +
+                (time.getMinutes() < 10 ? '0' : '') + time.getMinutes() + ":" +
+                (time.getSeconds() < 10 ? '0' : '') + time.getSeconds();  
+            
+            if((time.getMinutes() ==  59 && time.getSeconds() <= 6) && auth_AlarmTopHour.checked == true ){
+                audio.play();
+            }   
+            if((time.getMinutes() ==  29 && time.getSeconds() <= 6) && auth_AlarmMidHour.checked == true ){
+                audio.play();
+            }   
+
+        }, 1000);
+    });  
+
+    function onclick_auth(){
+        var isAllActivated = true;
+         alarmArray.forEach(element => {
+            if(!element.checked){
+                isAllActivated = false;
+            }
+            if(isAllActivated){
+                upperMessage.style.backgroundColor ='#23A31C';
+            } else{
+                upperMessage.style.backgroundColor ='red';
+            }
+        });
+    }
+
+    function activate_All(){
+        alarmArray.forEach(element => {
+            if(element.checked == false){
+                element.checked = true;
+            }
+        });
+        onclick_auth();
+    }
+    </script>    
+</html>
